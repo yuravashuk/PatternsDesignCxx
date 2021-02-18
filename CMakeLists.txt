@@ -17,10 +17,12 @@ add_definitions(
 
 # Source code
 file(GLOB Sources
-	Source/*.h
 	Source/*.hpp
-    Source/*.cpp
-	Source/*.cxx)
+	Source/*.cxx
+    Source/Game/*.hpp
+    Source/Game/*.cxx
+    Source/Core/*.hpp
+    Source/Core/*.cxx)
 
 add_executable(${PROJECT_NAME} ${Sources})
 # target_link_libraries(${PROJECT_NAME} ${ALL_LIBS})

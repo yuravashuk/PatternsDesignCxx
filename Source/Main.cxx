@@ -5,11 +5,12 @@
 #include <vector>
 
 // ECS
-#include "Actor.hpp"
-#include "Component.hpp"
-#include "System.hpp"
+#include "Core/Actor.hpp"
+#include "Core/Component.hpp"
+#include "Core/System.hpp"
 
-#include "StatComponent.hpp"
+#include "Game/StatComponent.hpp"
+#include "Game/StatFactory.hpp"
 
 #ifdef _WIN32
 #if defined(_DEBUG)
@@ -40,9 +41,9 @@ int main(void)
 #endif //_WIN32
 	
 	// Allocate 
-	const auto warriorData = CharacterStatFactory::GetShared().CreateStatData(CharacterType::Warrior);
-	const auto waizardData = CharacterStatFactory::GetShared().CreateStatData(CharacterType::Wizard);
-	const auto enemyData = CharacterStatFactory::GetShared().CreateStatData(CharacterType::Enemy);
+	const auto warriorData = StatFactory::GetShared().CreateStatData(CharacterType::Warrior);
+	const auto waizardData = StatFactory::GetShared().CreateStatData(CharacterType::Wizard);
+	const auto enemyData = StatFactory::GetShared().CreateStatData(CharacterType::Enemy);
 
 	Actor *warriorActor = new Actor(0);
 	warriorActor->AddComponent( new StatComponent("Warrior", 1, warriorData ));
