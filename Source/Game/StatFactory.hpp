@@ -18,7 +18,7 @@ public:
 
     StatComponentData CreateStatData( CharacterType inType );
 
-private:
+//private:
     StatFactory() = default;
     StatFactory(const StatFactory&) = default;
     StatFactory(StatFactory&&) = default;

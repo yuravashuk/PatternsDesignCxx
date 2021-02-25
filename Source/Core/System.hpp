@@ -7,9 +7,11 @@
 class System
 {
 public:
+    virtual ~System() = default;
 
-private:
-
+    virtual bool Initialize() = 0;
+    virtual void Update() = 0;
+    virtual void Destroy() = 0;
 };
 
 #endif //_SYSTEM_HPP_

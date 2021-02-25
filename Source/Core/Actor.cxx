@@ -1,5 +1,6 @@
 
 #include "Actor.hpp"
+#include "Utils.hpp"
 
 Actor::Actor(uint32_t inID)
     : mID(inID)
@@ -28,7 +29,11 @@ void Actor::Destroy()
     for (auto component : mComponents)
     {
         component->Destroy();
+
+        Utils::SafeRelease(component);
     }
+
+    mComponents.clear();
 }
 
 uint32_t Actor::GetID() const 
