@@ -16,6 +16,8 @@
 #include "Game/MeshComponent.hpp"
 #include "Game/StatFactory.hpp"
 
+#include "Core/World.hpp"
+
 #ifdef _WIN32
 #if defined(_DEBUG)
 #include <crtdbg.h>
@@ -33,7 +35,13 @@ int main(void)
 #endif //_DEBUG
 #endif //_WIN32
 
-	// Allocate 
+	// Initialize Core Systems and Actors
+	if (!Core::Shared().InitializeSystems())
+	{
+		return -1;
+	}
+
+	// Allocate Actors
 	const auto warriorData = StatFactory::GetShared().CreateStatData(CharacterType::Warrior);
 	const auto waizardData = StatFactory::GetShared().CreateStatData(CharacterType::Wizard);
 	const auto enemyData = StatFactory::GetShared().CreateStatData(CharacterType::Enemy);
@@ -48,46 +56,15 @@ int main(void)
 	Actor *enemyActor = new Actor(2);
 	enemyActor->AddComponent( new StatComponent("Enemy", 2, enemyData) );
 
-	std::vector< Actor* > actors = { warriorActor, wizardActor, enemyActor };
+	// Register new Scene Actors
+	Core::Shared().GetWorld()->AddActor( warriorActor );
+	Core::Shared().GetWorld()->AddActor( wizardActor );
+	Core::Shared().GetWorld()->AddActor( enemyActor );
 
-	if (!Core::Shared().InitializeSystems())
-	{
-		return -1;
-	}
+	// Start Game Loop
+	Core::Shared().RunGameLoop();
 
-	// init all actors
-	for (auto actor : actors)
-	{
-		actor->Initialize();
-	}
-
-	// game loop
-	//bool quit = false;
-	//while (!quit)
-	for (int i = 0; i < 2; i++)
-	{
-		// receive input 
-
-		// update all actors
-		for (auto actor : actors)
-		{
-			actor->Update();
-			std::cout << "----------\n";
-		}
-
-		// render all actors
-		Core::Shared().GetRenderSystem()->Render();
-
-		// render audio
-		// update AI
-	}
-
-	// destroy all actors
-	for (auto actor : actors)
-	{
-		actor->Destroy();
-	}
-
+	// Clear resources
 	Core::Shared().DestroySystems();
 
 	// Clear Resources

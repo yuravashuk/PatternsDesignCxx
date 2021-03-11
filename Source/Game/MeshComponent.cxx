@@ -8,6 +8,12 @@ void MeshComponent::Initialize()
 {
     auto renderer = Core::Shared().GetRenderSystem();
     renderer->RegisterMeshComponent( this );
+    MeshData data;
+
+    if (!renderer->LoadMesh( mFileName, data ))
+    {
+        std::cerr << "Failed to load mesh!\n";
+    }
 }
 
 void MeshComponent::Update()

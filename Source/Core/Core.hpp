@@ -9,7 +9,7 @@
 
 #include "RenderSystem.hpp"
 #include "AudioSystem.hpp"
-
+#include "World.hpp"
 class Core final 
 {
 public:
@@ -29,16 +29,27 @@ public:
 
     void DestroySystems();
 
+    void RunGameLoop();
+
+    void Quit();
+
     RenderSystem* GetRenderSystem();
 
     AudioSystem* GetAudioSystem();
 
+    World* GetWorld();
+
 private:
-    Core() = default;
+    Core()
+        : mQuit(false)
+    { }
 
 private:
     RenderSystem* mRenderer;
     AudioSystem* mAudio;
+    World* mWorld;
+
+    bool mQuit;
 };
 
 #endif //_CORE_HPP_
