@@ -11,6 +11,7 @@
 #include "Core/System.hpp"
 #include "Core/RenderSystem.hpp"
 #include "Core/Core.hpp"
+#include "Core/StateMachine.hpp"
 
 #include "Game/StatComponent.hpp"
 #include "Game/MeshComponent.hpp"
@@ -23,6 +24,85 @@
 #include <crtdbg.h>
 #endif //_DEBUG
 #endif //_WIN32
+
+struct PlayerData
+{
+	float X = 40.0f;
+	float Y = 40.0f;
+} g_PlayerData;
+
+enum StateTag : uint32_t
+{
+	ATTACK_TAG = 0,
+	CHASE_TAG = 1
+};
+
+class AttackState : public StateMachineDelegate
+{
+public:
+	virtual ~AttackState() = default;
+
+    void OnBind(StateMachine *inStateMachine) override 
+	{
+		mStateMachine = inStateMachine;
+
+		std::cout << "On Bind Attack State!\n"; 
+	}
+
+    void OnExecute() override 
+	{ 
+		std::cout << "On Execute Attack State!\n"; 
+
+		float distance = 30.0f;
+
+		if ((g_PlayerData.X <= distance) && (g_PlayerData.Y <= distance))
+		{
+			std::cout << "Yes we will attack the player!!\n";
+		} 
+		else 
+		{
+			mStateMachine->Execute( StateTag::CHASE_TAG );
+		}
+	}
+
+    void OnDestroy() override { std::cout << "On Destroy Attack State!\n"; }
+private:
+	StateMachine *mStateMachine;
+};
+
+class ChaseState : public StateMachineDelegate
+{
+public:
+	virtual ~ChaseState() = default;
+
+    void OnBind(StateMachine *inStateMachine) override 
+	{ 
+		mStateMachine = inStateMachine;
+		std::cout << "On Bind Chase State!\n"; 
+	}
+
+    void OnExecute() override 
+	{ 
+		std::cout << "On Execute Chase State!\n"; 
+
+		float distance = 30.0f;
+
+		if ((g_PlayerData.X >= distance) || (g_PlayerData.Y >= distance)) 
+		{
+			std::cout << "Okay, we are chasing the player!\n";
+			g_PlayerData.X = g_PlayerData.Y = 10.0f;
+		}
+		else 
+		{
+			mStateMachine->Execute( StateTag::ATTACK_TAG );
+		}
+	}
+
+    void OnDestroy() override { std::cout << "On Destroy Chase State!\n"; }
+private:
+	StateMachine *mStateMachine;
+};
+
 
 // Entry point
 int main(void)
@@ -71,6 +151,27 @@ int main(void)
 	Utils::SafeRelease( warriorActor );
 	Utils::SafeRelease( enemyActor );
 	Utils::SafeRelease( wizardActor );
+
+
+	std::cout << "\n------------------------\n";
+	std::cout << "State Machine Tests!\n";
+
+	auto machine = new StateMachine();
+
+	auto attackState = new AttackState();
+	auto chaseState = new ChaseState();
+	
+	machine->AddState( StateTag::ATTACK_TAG, attackState );
+	machine->AddState( StateTag::CHASE_TAG, chaseState );
+
+	machine->Execute( StateTag::CHASE_TAG );
+	machine->Execute( StateTag::CHASE_TAG );
+	//machine->Execute( StateTag::ATTACK_TAG );
+
+	delete machine;
+
+	delete attackState;
+	delete chaseState;
 
 	return 0;
 }
